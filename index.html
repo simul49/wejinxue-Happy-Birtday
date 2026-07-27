@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#fff8f0">
+<title>WuJinXue</title>
+<style>
+  :root {
+    --gold: #d4a574;
+    --gold-light: #f0d6b8;
+    --pink: #e8a0bf;
+    --pink-light: #fce4ec;
+    --rose: #c4738b;
+    --cream: #fff8f0;
+    --dark: #3d2c2c;
+    --white: #ffffff;
+    --shadow: 0 8px 32px rgba(61,44,44,0.12);
+    --shadow-lg: 0 20px 60px rgba(61,44,44,0.18);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    font-family: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', serif;
+    background: linear-gradient(135deg, #fff8f0 0%, #fdf2f6 25%, #fef5f9 50%, #fdf6f0 75%, #fff8f0 100%);
+    background-size: 400% 400%;
+    animation: bgShift 16s ease-in-out infinite;
+    color: var(--dark);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  @keyframes bgShift {
+    0%, 100% { background-position: 0% 50%; }
+    25% { background-position: 100% 0%; }
+    50% { background-position: 100% 100%; }
+    75% { background-position: 0% 100%; }
+  }
+
+  /* ── Floating Background Particles ── */
+  .bg-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    animation: particleFloat linear infinite;
+  }
+  @keyframes particleFloat {
+    0% { transform: translateY(105vh) scale(0) rotate(0deg); opacity: 0; }
+    5% { opacity: 1; }
+    15% { transform: translateY(75vh) scale(1) rotate(120deg); opacity: 0.7; }
+    50% { transform: translateY(40vh) scale(0.6) rotate(360deg); opacity: 0.4; }
+    85% { transform: translateY(10vh) scale(0.3) rotate(600deg); opacity: 0.15; }
+    100% { transform: translateY(-5vh) scale(0) rotate(720deg); opacity: 0; }
+  }
+
+  /* ── Floating Light Orbs ── */
+  .light-orb {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: orbDrift ease-in-out infinite;
+  }
+  @keyframes orbDrift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(60px, -40px) scale(1.15); }
+    50% { transform: translate(-30px, -20px) scale(0.9); }
+    75% { transform: translate(40px, 30px) scale(1.1); }
+  }
+
+  /* ── Navigation Dots ── */
+  .nav-dots {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .nav-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgba(212,167,116,0.35);
+    border: 2px solid rgba(212,167,116,0.5);
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(.4,0,.2,1);
+    position: relative;
+  }
+  .nav-dot:hover,
+  .nav-dot.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    box-shadow: 0 0 16px rgba(212,167,116,0.5);
+    transform: scale(1.4);
+  }
+  .nav-dot::after {
+    content: attr(data-label);
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-size: 13px;
+    color: var(--gold);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .nav-dot:hover::after { opacity: 1; }
+
+  /* ── Pages ── */
+  .page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+    scroll-snap-align: start;
+  }
+
+  /* ── Decorative blobs ── */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 0;
+    animation: blobPulse 6s ease-in-out infinite, blobFloat 10s ease-in-out infinite;
+  }
+  @keyframes blobPulse {
+    0%, 100% { opacity: 0.18; transform: scale(1); }
+    50% { opacity: 0.28; transform: scale(1.08); }
+  }
+  @keyframes blobFloat {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(20px, -15px); }
+    50% { transform: translate(-10px, -25px); }
+    75% { transform: translate(15px, 10px); }
+  }
+  .blob-1 { width: 400px; height: 400px; background: var(--pink); top: -100px; left: -100px; animation-delay: 0s; }
+  .blob-2 { width: 350px; height: 350px; background: var(--gold-light); bottom: -80px; right: -80px; animation-delay: -2s; }
+  .blob-3 { width: 300px; height: 300px; background: var(--rose); top: 50%; right: -120px; animation-delay: -4s; }
+  .blob-4 { width: 380px; height: 380px; background: var(--pink-light); bottom: -100px; left: -100px; animation-delay: -6s; }
+
+  /* ── Decorative Rotating Rings ── */
+  .deco-ring {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    border: 1.5px solid rgba(212,167,116,0.12);
+    border-radius: 50%;
+    animation: ringSpin 30s linear infinite;
+  }
+  @keyframes ringSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .deco-ring-1 { width: 500px; height: 500px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-duration: 35s; }
+  .deco-ring-2 { width: 620px; height: 620px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-duration: 45s; animation-direction: reverse; border-style: dashed; }
+  .deco-ring-3 { width: 340px; height: 340px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-duration: 28s; border-color: rgba(232,160,191,0.1); }
+
+  /* ── Decorative Dots Grid ── */
+  .dots-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.03;
+    background-image: radial-gradient(circle, var(--gold) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: dotsShift 20s linear infinite;
+  }
+  @keyframes dotsShift {
+    0% { background-position: 0 0; }
+    100% { background-position: 40px 40px; }
+  }
+
+  /* ── Page 1: Hero ── */
+  .hero-page {
+    background: linear-gradient(135deg, #fdf2f6 0%, #fff8f0 30%, #fef5f9 60%, #fdf6f0 100%);
+    background-size: 300% 300%;
+    animation: heroBgShift 10s ease-in-out infinite;
+    flex-direction: column;
+    text-align: center;
+  }
+  @keyframes heroBgShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .hero-sparkle {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: sparkle 3s ease-in-out infinite;
+    pointer-events: none;
+    box-shadow: 0 0 6px rgba(212,167,116,0.6), 0 0 12px rgba(212,167,116,0.3);
+  }
+  @keyframes sparkle {
+    0%,100% { opacity: 0.15; transform: scale(0.8); }
+    30% { opacity: 1; transform: scale(2.8); }
+    60% { opacity: 0.5; transform: scale(1.2); }
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 10px 28px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50px;
+    color: var(--gold);
+    font-size: 15px;
+    letter-spacing: 4px;
+    margin-bottom: 32px;
+    animation: fadeInDown 0.8s ease;
+  }
+  .hero-title {
+    font-size: clamp(48px, 8vw, 88px);
+    font-weight: 400;
+    background: linear-gradient(135deg, var(--rose), var(--gold), var(--pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    animation: fadeInUp 0.8s ease 0.15s both;
+  }
+  .hero-subtitle {
+    font-size: clamp(18px, 3vw, 26px);
+    color: #9b7b7b;
+    font-weight: 300;
+    letter-spacing: 6px;
+    margin-bottom: 40px;
+    animation: fadeInUp 0.8s ease 0.3s both;
+  }
+  .hero-scroll {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--gold);
+    font-size: 13px;
+    letter-spacing: 3px;
+    animation: fadeInUp 0.8s ease 0.6s both, float 2.5s ease-in-out infinite;
+    cursor: pointer;
+  }
+  .hero-scroll-arrow {
+    width: 28px; height: 28px;
+    border-right: 2px solid var(--gold);
+    border-bottom: 2px solid var(--gold);
+    transform: rotate(45deg);
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+  }
+
+  /* ── Content pages ── */
+  .content-page { background: var(--cream); }
+  .content-page:nth-child(even) { background: #fdf6f0; }
+
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    max-width: 1100px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(.4,0,.2,1);
+  }
+  .card.visible { opacity: 1; transform: translateY(0); }
+  .card.reverse { flex-direction: row-reverse; }
+
+  .card-image {
+    flex: 0 0 420px;
+    height: 420px;
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.4s ease;
+  }
+  .card-image:hover { transform: scale(1.03) rotate(-0.3deg); box-shadow: 0 24px 70px rgba(61,44,44,0.22), 0 0 40px rgba(212,167,116,0.12); }
+  .card-image { transition: transform 0.5s cubic-bezier(.4,0,.2,1), box-shadow 0.5s ease; }
+
+  .card-image .img-bg {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-image .img-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 120px;
+    position: absolute;
+    top: 0; left: 0;
+  }
+
+  .card-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    border: 2px solid rgba(212,167,116,0.25);
+    pointer-events: none;
+  }
+
+  .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .card-number {
+    font-size: clamp(10px, 1.2vw, 13px);
+    letter-spacing: clamp(3px, 0.5vw, 6px);
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .card-title {
+    font-size: clamp(26px, 4vw, 38px);
+    color: var(--dark);
+    font-weight: 400;
+    line-height: 1.35;
+  }
+  .card-title em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--rose), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .card-divider {
+    width: 48px; height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--pink));
+    border-radius: 1px;
+  }
+  .card-text {
+    font-size: clamp(14px, 1.4vw, 17px);
+    line-height: clamp(1.6, 2.5vw, 2);
+    color: #6b5555;
+    letter-spacing: 0.5px;
+  }
+  .card-advice {
+    background: rgba(255,248,240,0.7);
+    backdrop-filter: blur(10px);
+    border-left: 3px solid var(--gold);
+    padding: 16px 22px;
+    border-radius: 0 12px 12px 0;
+    font-size: 15px;
+    color: #8b6b6b;
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+  .en-subtitle {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 14px;
+    color: #b89595;
+    font-style: italic;
+    letter-spacing: 0.5px;
+    margin-top: -12px;
+    line-height: 1.6;
+  }
+  .card-title-en {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 15px;
+    color: #b89595;
+    font-style: italic;
+    letter-spacing: 0.8px;
+    margin-top: -10px;
+  }
+  .card-text-en {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: clamp(10px, 1.1vw, 14px);
+    line-height: clamp(1.5, 2.2vw, 1.8);
+    color: #a08888;
+    font-style: italic;
+    margin-top: -8px;
+  }
+  .card-advice-en {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: clamp(9px, 1vw, 13px);
+    color: #a08888;
+    font-style: italic;
+    margin-top: -4px;
+    letter-spacing: 0.3px;
+  }
+  .hero-subtitle-en {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: clamp(12px, 1.2vw, 16px);
+    color: #b89595;
+    font-style: italic;
+    letter-spacing: 2px;
+    margin-top: -30px;
+    margin-bottom: 40px;
+    animation: fadeInUp 0.8s ease 0.45s both;
+  }
+  .final-text-en {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 15px;
+    color: #a08888;
+    font-style: italic;
+    line-height: 2;
+    max-width: 600px;
+    margin-top: -12px;
+  }
+
+  /* ── Song Lyric (Joker Xue) ── */
+  .song-lyric {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(212,167,116,0.06), rgba(232,160,191,0.06));
+    border: 1px solid rgba(212,167,116,0.15);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-top: 4px;
+    transition: all 0.4s ease;
+  }
+  .song-lyric:hover {
+    background: linear-gradient(135deg, rgba(212,167,116,0.1), rgba(232,160,191,0.1));
+    border-color: rgba(212,167,116,0.3);
+    box-shadow: 0 0 20px rgba(212,167,116,0.08);
+  }
+  .song-icon {
+    font-size: clamp(16px, 2vw, 22px);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .song-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .song-line {
+    font-family: 'Georgia', 'Noto Serif SC', serif;
+    font-size: clamp(12px, 1.2vw, 15px);
+    color: #8b6b6b;
+    font-style: italic;
+    line-height: 1.7;
+    letter-spacing: 0.8px;
+  }
+  .song-from {
+    font-size: clamp(10px, 0.9vw, 12px);
+    color: var(--gold);
+    letter-spacing: 1.5px;
+    margin-top: 2px;
+  }
+  .song-from span {
+    color: #b89595;
+    margin-left: 4px;
+  }
+  .song-play-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(212,167,116,0.4);
+    background: rgba(252,228,236,0.3);
+    color: var(--gold);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    align-self: center;
+    transition: all 0.3s ease;
+    padding: 0;
+    line-height: 1;
+  }
+  .song-play-btn:hover {
+    background: rgba(212,167,116,0.2);
+    border-color: var(--gold);
+    box-shadow: 0 0 14px rgba(212,167,116,0.25);
+  }
+  .song-play-btn.playing {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #fff;
+    animation: playPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes playPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(212,167,116,0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(212,167,116,0); }
+  }
+  .hero-music-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 20px;
+    border: 1px solid rgba(232,160,191,0.4);
+    border-radius: 50px;
+    color: var(--rose);
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    animation: fadeInDown 0.8s ease 0.15s both;
+    background: rgba(252,228,236,0.3);
+  }
+
+  /* ── Final page ── */
+  .final-page {
+    background: linear-gradient(135deg, #fdf2f6 0%, #fef5f9 35%, #fff8f0 65%, #fdf6f0 100%);
+    background-size: 300% 300%;
+    animation: finalBgShift 8s ease-in-out infinite;
+    text-align: center;
+    flex-direction: column;
+    gap: 32px;
+  }
+  @keyframes finalBgShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .final-heart {
+    font-size: clamp(44px, 8vw, 80px);
+    animation: float 2s ease-in-out infinite;
+  }
+  .final-title {
+    font-size: clamp(32px, 5vw, 52px);
+    background: linear-gradient(135deg, var(--rose), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 400;
+  }
+  .final-text {
+    font-size: 18px;
+    color: #8b6b6b;
+    line-height: 2.6;
+    max-width: 700px;
+    text-align: center;
+    margin: 0 auto;
+  }
+  .final-signature {
+    font-size: 24px;
+    color: var(--gold);
+    letter-spacing: 4px;
+    margin-top: 12px;
+  }
+
+  /* ── Navigation arrows ── */
+  .arrow-nav {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 16px;
+    z-index: 1000;
+  }
+  .arrow-btn {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(212,167,116,0.5);
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 20px;
+    transition: all 0.3s;
+  }
+  .arrow-btn:hover {
+    background: var(--gold);
+    color: white;
+    border-color: var(--gold);
+    box-shadow: 0 4px 20px rgba(212,167,116,0.4);
+  }
+
+  /* ── Particle / cherry blossoms ── */
+  .petal {
+    position: fixed;
+    pointer-events: none;
+    z-index: 999;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-10vh) rotate(0deg) scale(0); opacity: 0; }
+    10% { opacity: 1; transform: translateY(5vh) rotate(60deg) scale(1); }
+    90% { opacity: 0.8; }
+    100% { transform: translateY(105vh) rotate(720deg) scale(0.3); opacity: 0; }
+  }
+
+  /* ── Snowflakes ── */
+  #snowfall { position: fixed; inset: 0; pointer-events: none; z-index: 998; overflow: hidden; }
+  .snowflake {
+    position: fixed;
+    pointer-events: none;
+    z-index: 998;
+    animation: snowfall linear forwards;
+    opacity: 0.85;
+  }
+  @keyframes snowfall {
+    0%   { transform: translateY(-5vh) translateX(0) rotate(0deg); opacity: 0; }
+    8%   { opacity: 0.85; }
+    90%  { opacity: 0.7; }
+    100% { transform: translateY(105vh) translateX(60px) rotate(360deg); opacity: 0; }
+  }
+
+  /* ── WeChat Chat Bubble ── */
+  .chat-bubble-wrap {
+    flex: 0 0 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 28px;
+    background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+    min-height: 420px;
+    justify-content: center;
+  }
+  .chat-bubble-wrap::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(212,167,116,0.15), transparent 70%);
+    border-radius: 50%;
+  }
+  .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    width: 100%;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .chat-avatar {
+    width: 42px; height: 42px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--rose), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .chat-name {
+    color: rgba(255,255,255,0.9);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  .chat-name span {
+    display: block;
+    color: rgba(255,255,255,0.35);
+    font-size: 11px;
+    font-weight: 400;
+    margin-top: 2px;
+    letter-spacing: 1px;
+  }
+  .chat-bubble {
+    background: linear-gradient(135deg, #95ec69, #7dd55a);
+    color: #1a1a1a;
+    padding: clamp(10px, 1.5vw, 14px) clamp(14px, 2vw, 18px);
+    border-radius: 4px 18px 18px 18px;
+    font-size: clamp(12px, 1.2vw, 15px);
+    line-height: 1.7;
+    max-width: 90%;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    word-break: break-word;
+  }
+  .chat-bubble::after {
+    content: '';
+    position: absolute;
+    left: -6px; top: 0;
+    width: 12px; height: 12px;
+    background: #95ec69;
+    border-radius: 0 12px 0 0;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+  }
+  .chat-time {
+    color: rgba(255,255,255,0.25);
+    font-size: 11px;
+    align-self: center;
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+  .chat-translated {
+    background: rgba(255,255,255,0.05);
+    border-left: 2px solid var(--gold);
+    padding: 10px 14px;
+    border-radius: 0 10px 10px 0;
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    font-style: italic;
+    margin-top: 4px;
+    max-width: 90%;
+  }
+
+  /* ── Responsive ── */
+
+  /* Tablet landscape / small desktop */
+  @media (max-width: 1100px) {
+    .card, .card.reverse { gap: 40px; }
+    .card-image { flex: 0 0 340px; height: 340px; }
+    .card-content { gap: 16px; }
+    .chat-bubble-wrap { flex: 0 0 340px; min-height: 340px; }
+  }
+
+  /* Tablet portrait */
+  @media (max-width: 900px) {
+    .card, .card.reverse { flex-direction: column; gap: 20px; text-align: center; }
+    .card-image { flex: 0 0 auto; width: 70%; max-width: 320px; aspect-ratio: 3/4; height: auto; margin: 0 auto; border-radius: 18px; }
+    .card-image .img-bg { object-position: center 20%; }
+    .card-image::after { border-radius: 18px; }
+    .card-content { align-items: center; gap: 10px; }
+    .card-divider { margin: 0 auto; }
+    .card-advice, .card-advice-en { text-align: left; align-self: stretch; }
+    .card-text, .card-text-en { text-align: center; }
+    .chat-bubble-wrap { flex: 0 0 auto; width: 70%; max-width: 320px; aspect-ratio: 3/4; min-height: auto; margin: 0 auto; }
+    .nav-dots { right: 10px; gap: 10px; }
+    .nav-dot { width: 10px; height: 10px; }
+    .nav-dot::after { display: none; }
+    .page { padding: 40px 20px; }
+    .arrow-nav { bottom: 20px; gap: 12px; }
+    .arrow-btn { width: 44px; height: 44px; font-size: 18px; }
+  }
+
+  /* Large phones */
+  @media (max-width: 640px) {
+    .page { padding: 32px 14px; }
+    .hero-page { padding: 50px 14px; }
+    .hero-badge { font-size: 12px; padding: 7px 18px; letter-spacing: 3px; margin-bottom: 20px; }
+    .hero-title { font-size: clamp(32px, 11vw, 48px); }
+    .hero-subtitle { font-size: 15px; letter-spacing: 3px; margin-bottom: 20px; }
+    .hero-subtitle-en { font-size: 13px; margin-top: -18px; margin-bottom: 24px; letter-spacing: 1px; }
+    .hero-scroll { font-size: 10px; letter-spacing: 2px; }
+    .hero-scroll-arrow { width: 20px; height: 20px; }
+
+    .card { gap: 14px; }
+    .card-image { flex: 0 0 auto; width: 72%; max-width: 260px; aspect-ratio: 3/4; height: auto; border-radius: 16px; }
+    .card-image .img-bg { object-position: center 20%; }
+    .card-image::after { border-radius: 16px; }
+    .card-title { font-size: clamp(20px, 5.5vw, 26px); }
+    .card-title-en { font-size: 12px; }
+    .card-text { font-size: 14px; line-height: 1.7; }
+    .card-text-en { font-size: 11px; line-height: 1.6; }
+    .card-advice { font-size: 12px; padding: 10px 14px; }
+    .card-advice-en { font-size: 10px; }
+    .card-number { font-size: 10px; letter-spacing: 3px; }
+    .card-content { gap: 8px; }
+
+    .chat-bubble-wrap { flex: 0 0 auto; width: 72%; max-width: 260px; aspect-ratio: 3/4; min-height: auto; padding: 16px; border-radius: 16px; margin: 0 auto; }
+    .chat-avatar { width: 32px; height: 32px; font-size: 15px; }
+    .chat-name { font-size: 12px; }
+    .chat-name span { font-size: 9px; }
+    .chat-bubble { font-size: 12px; padding: 9px 12px; }
+    .chat-translated { font-size: 10px; padding: 6px 8px; }
+    .chat-time { font-size: 9px; }
+
+    .final-page { gap: 20px; padding: 50px 14px; }
+    .final-heart { font-size: 48px; }
+    .final-title { font-size: clamp(24px, 6.5vw, 32px); }
+    .final-text { font-size: 13px; line-height: 2.2; max-width: 100%; }
+    .final-signature { font-size: 18px; letter-spacing: 3px; }
+
+    .nav-dots { right: 4px; gap: 8px; }
+    .nav-dot { width: 8px; height: 8px; border-width: 1.5px; }
+    .nav-dot.active { transform: scale(1.2); }
+    .arrow-nav { bottom: 12px; }
+    .arrow-btn { width: 38px; height: 38px; font-size: 15px; }
+
+    .blob-1 { width: 160px; height: 160px; }
+    .blob-2 { width: 140px; height: 140px; }
+    .blob-3 { width: 120px; height: 120px; }
+    .blob-4 { width: 160px; height: 160px; }
+
+    .deco-ring-1 { width: 280px; height: 280px; }
+    .deco-ring-2 { width: 350px; height: 350px; }
+    .deco-ring-3 { width: 200px; height: 200px; }
+    .dots-grid { background-size: 28px 28px; }
+
+    .hero-music-badge { font-size: 11px; padding: 5px 16px; letter-spacing: 1.5px; gap: 4px; }
+    .song-lyric { padding: 10px 14px; gap: 8px; border-radius: 10px; }
+    .song-line { font-size: 12px; }
+    .song-from { font-size: 10px; }
+  }
+
+  /* Small phones */
+  @media (max-width: 400px) {
+    .page { padding: 24px 10px; }
+    .hero-page { padding: 40px 10px; }
+    .hero-badge { font-size: 10px; padding: 6px 14px; letter-spacing: 2px; }
+    .hero-title { font-size: clamp(26px, 10vw, 40px); }
+    .hero-subtitle { font-size: 13px; letter-spacing: 3px; }
+    .hero-subtitle-en { font-size: 11px; }
+    .hero-music-badge { font-size: 10px; padding: 4px 12px; letter-spacing: 1px; }
+
+    .card { gap: 12px; }
+    .card-image { flex: 0 0 auto; width: 75%; max-width: 220px; aspect-ratio: 3/4; height: auto; border-radius: 14px; }
+    .card-image .img-bg { object-position: center 20%; }
+    .card-image::after { border-radius: 14px; }
+    .card-title { font-size: clamp(18px, 5.5vw, 22px); }
+    .card-text { font-size: 13px; line-height: 1.65; }
+    .card-text-en { font-size: 10px; }
+    .card-advice { font-size: 11px; padding: 8px 12px; }
+    .card-advice-en { font-size: 9px; }
+    .card-number { font-size: 9px; letter-spacing: 3px; }
+    .card-content { gap: 6px; }
+
+    .chat-bubble-wrap { width: 75%; max-width: 220px; aspect-ratio: 3/4; min-height: auto; padding: 14px; margin: 0 auto; }
+    .chat-bubble { font-size: 11px; padding: 8px 10px; }
+    .chat-translated { font-size: 9px; }
+
+    .final-heart { font-size: 40px; }
+    .final-title { font-size: clamp(20px, 6.5vw, 26px); }
+    .final-text { font-size: 12px; line-height: 2; }
+    .final-signature { font-size: 15px; }
+
+    .arrow-btn { width: 34px; height: 34px; font-size: 13px; }
+  }
+
+  /* Very small phones */
+  @media (max-width: 340px) {
+    .page { padding: 20px 8px; }
+    .card-image { flex: 0 0 auto; width: 78%; max-width: 190px; aspect-ratio: 3/4; height: auto; border-radius: 12px; }
+    .card-image .img-bg { object-position: center 20%; }
+    .card-image::after { border-radius: 12px; }
+    .card-title { font-size: clamp(16px, 6vw, 20px); }
+    .card-text { font-size: 12px; line-height: 1.6; }
+    .card-content { gap: 5px; }
+    .final-text { font-size: 11px; line-height: 1.9; }
+    .arrow-btn { width: 30px; height: 30px; font-size: 11px; }
+    .card-text { font-size: 13px; }
+    .card-content { gap: 8px; }
+    .final-text { font-size: 12px; line-height: 2; }
+    .arrow-btn { width: 32px; height: 32px; font-size: 12px; }
+    .nav-dots { gap: 6px; }
+    .nav-dot { width: 7px; height: 7px; }
+  }
+
+  /* Ensure touch-friendly */
+  @media (hover: none) and (pointer: coarse) {
+    .arrow-btn { min-width: 44px; min-height: 44px; }
+    .nav-dot { min-width: 12px; min-height: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating Background Particles -->
+<div id="bgParticles"></div>
+
+<!-- Falling Petals Container -->
+<div id="petals"></div>
+
+<!-- Snowfall Container -->
+<div id="snowfall"></div>
+
+<!-- Audio Players -->
+<audio id="audio-tianwai" src="audio/tianwailaiwu.mp3" preload="auto"></audio>
+<audio id="audio-xiangfeng" src="audio/xiangfengyiyang.mp3" preload="auto"></audio>
+<audio id="audio-peini" src="audio/peiniquliulang.mp3" preload="auto"></audio>
+<audio id="audio-wushu" src="audio/wushu.mp3" preload="auto"></audio>
+
+<!-- Navigation Dots -->
+<nav class="nav-dots" id="navDots"></nav>
+
+<!-- Arrow Navigation -->
+<div class="arrow-nav">
+  <button class="arrow-btn" onclick="goPrev()" title="上一页">&#10094;</button>
+  <button class="arrow-btn" onclick="goNext()" title="下一页">&#10095;</button>
+</div>
+
+<!-- ═══════════ PAGE 1: HERO ═══════════ -->
+<section class="page hero-page" data-index="0">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="deco-ring deco-ring-1"></div>
+  <div class="deco-ring deco-ring-2"></div>
+  <div class="deco-ring deco-ring-3"></div>
+  <div class="dots-grid"></div>
+  <div id="sparkles"></div>
+  <div class="hero-badge">&#127800; SPECIAL DAY &#127800;</div>
+  <h1 class="hero-title">Wu JinXue · Olivia</h1>
+  <p class="hero-subtitle">生 日 快 乐</p>
+  <p class="hero-subtitle-en">Happy Birthday, my dear senior 🐰❄️</p>
+  <div class="hero-music-badge">🎵 薛之谦 · 超级粉丝 🎵</div>
+  <div class="hero-scroll" onclick="goNext()">
+    <span>SWIPE</span>
+    <div class="hero-scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 2: WISH 1 ═══════════ -->
+<section class="page content-page" data-index="1">
+  <div class="blob blob-3"></div>
+  <div class="card">
+    <div class="card-image">
+      <img class="img-bg" src="images/photo1.jpg" alt="Wu JinXue with flowers">
+    </div>
+    <div class="card-content">
+      <span class="card-number">Bloom</span>
+      <h2 class="card-title">愿你如<em>春日樱花</em>般绽放</h2>
+      <p class="card-title-en">May you bloom like spring cherry blossoms</p>
+      <div class="card-divider"></div>
+      <p class="card-text">Wu JinXue，生日快乐！愿你的人生如同春天里第一朵绽放的樱花，温柔而坚定，美丽而不张扬。每一天都充满阳光与微笑。</p>
+      <p class="card-text-en">Wu JinXue, happy birthday! May your life be like the first cherry blossom of spring — gentle yet strong, beautiful yet humble. May every day be filled with sunshine and smiles.</p>
+      <div class="card-advice">&#10024; 樱花的花期虽短，却在绽放的瞬间惊艳了整个春天。愿你也如此——不必为长久，只为尽情盛放。</div>
+      <div class="card-advice-en">Cherry blossoms bloom briefly, yet in that moment they stun the entire spring. May you do the same — not for the length, but for the fullness of your bloom.</div>
+      <div class="song-lyric" data-song="tianwai">
+        <div class="song-icon">🎵</div>
+        <div class="song-content">
+          <div class="song-line">你像天外来物一样 求之不得</div>
+          <div class="song-from">薛之谦<span>· 天外来物</span></div>
+        </div>
+        <button class="song-play-btn" title="Play" onclick="toggleMusic(event, 'tianwai', this)">▶</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 3: WISH 2 ═══════════ -->
+<section class="page content-page" data-index="2">
+  <div class="blob blob-4"></div>
+  <div class="card reverse">
+    <div class="card-image">
+      <img class="img-bg" src="images/photo2.jpg" alt="Olivia mirror selfie">
+    </div>
+    <div class="card-content">
+      <span class="card-number">Courage</span>
+      <h2 class="card-title">追逐<em>星辰大海</em>的勇气</h2>
+      <p class="card-title-en">The courage to chase the stars and seas</p>
+      <div class="card-divider"></div>
+      <p class="card-text">Olivia，新的一岁，愿你拥有追逐梦想的勇气。无论前方是星辰还是大海，你的每一步都算数，每一次努力都值得。</p>
+      <p class="card-text-en">Olivia, in this new year of your life, may you have the courage to chase your dreams. Whether it's stars or seas ahead, every step you take counts, every effort is worthwhile.</p>
+      <div class="card-advice">&#128150; 星辰不会问赶路人为什么出发，大海不会拒绝每一条河流。你只管向前，世界会为勇敢的人让路。</div>
+      <div class="card-advice-en">Stars never ask travelers why they set out, and the sea never refuses any river. Just keep moving forward — the world makes way for the brave.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 4: WISH 3 ═══════════ -->
+<section class="page content-page" data-index="3">
+  <div class="blob blob-1"></div>
+  <div class="card">
+    <div class="card-image">
+      <img class="img-bg" src="images/photo3.jpg" alt="Wu JinXue by the window">
+    </div>
+    <div class="card-content">
+      <span class="card-number">Transform</span>
+      <h2 class="card-title">破茧<em>成蝶</em>的力量</h2>
+      <p class="card-title-en">The power to break free and become a butterfly</p>
+      <div class="card-divider"></div>
+      <p class="card-text">Wu JinXue，成长的过程或许有些辛苦，但请相信，每一次蜕变都会让你变得更强大。像蝴蝶一样，在最美的时刻展翅飞翔。</p>
+      <p class="card-text-en">Wu JinXue, growing up can be challenging, but trust that every transformation makes you stronger. Like a butterfly, spread your wings and soar at your most beautiful moment.</p>
+      <div class="card-advice">&#127800; 蝴蝶在破茧之前，也曾是一只在黑暗中摸索的毛毛虫。你的每一次挣扎，都是翅膀生长的声音。</div>
+      <div class="card-advice-en">Before a butterfly breaks free, it was once a caterpillar finding its way in the dark. Every struggle of yours is the sound of your wings growing.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 5: WISH 4 ═══════════ -->
+<section class="page content-page" data-index="4">
+  <div class="blob blob-2"></div>
+  <div class="card reverse">
+    <div class="card-image">
+      <img class="img-bg" src="images/photo4.jpg" alt="Olivia in the grass">
+    </div>
+    <div class="card-content">
+      <span class="card-number">Moonlight</span>
+      <h2 class="card-title">心有<em>明月</em>，自在清风</h2>
+      <p class="card-title-en">A bright moon in your heart, a gentle breeze in your soul</p>
+      <div class="card-divider"></div>
+      <p class="card-text">Olivia，愿你心中永远有一轮明月，照亮前行的路。即使在最黑暗的夜晚，也要记得光明就在不远处等着你。</p>
+      <p class="card-text-en">Olivia, may there always be a bright moon in your heart, lighting the path ahead. Even on the darkest nights, remember that light is just around the corner waiting for you.</p>
+      <div class="card-advice">&#127769; 安静是一种力量，温柔是一种选择。保持内心的宁静，世界自会为你让路。</div>
+      <div class="card-advice-en">Stillness is a strength, gentleness is a choice. Keep your inner peace, and the world will make way for you.</div>
+      <div class="song-lyric" data-song="xiangfeng">
+        <div class="song-icon">🎵</div>
+        <div class="song-content">
+          <div class="song-line">像风一样 你靠近云都下降</div>
+          <div class="song-from">薛之谦<span>· 像风一样</span></div>
+        </div>
+        <button class="song-play-btn" title="Play" onclick="toggleMusic(event, 'xiangfeng', this)">▶</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 6: WISH 7 ═══════════ -->
+<section class="page content-page" data-index="5">
+  <div class="blob blob-2"></div>
+  <div class="card">
+    <div class="card-image">
+      <img class="img-bg" src="images/photo8.jpg" alt="Wu JinXue beautiful moment">
+    </div>
+    <div class="card-content">
+      <span class="card-number">Time</span>
+      <h2 class="card-title">时光<em>从不辜负</em>认真生活的人</h2>
+      <p class="card-title-en">Time never fails those who live earnestly</p>
+      <div class="card-divider"></div>
+      <p class="card-text">Wu JinXue，你走过的每一条路，经历的每一个瞬间，都在塑造着独一无二的你。不必急于求成，属于你的美好，终将如约而至。</p>
+      <p class="card-text-en">Wu JinXue, every path you've walked, every moment you've experienced, is shaping the one and only you. Don't rush — the beauty meant for you will arrive right on time.</p>
+      <div class="card-advice">🌟 时间是最公平的见证者——你用真心浇灌的每一件事，都会在未来的某一天开出花来。</div>
+      <div class="card-advice-en">Time is the fairest witness — everything you nurture with sincerity will one day bloom into flowers.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 7: WISH 6 ═══════════ -->
+<section class="page content-page" data-index="6">
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+  <div class="card reverse">
+    <div class="card-image">
+      <img class="img-bg" src="images/photo9.jpg" alt="Wu JinXue radiant smile">
+    </div>
+    <div class="card-content">
+      <span class="card-number">Wealth</span>
+      <h2 class="card-title">真正的<em>富有</em>，是心灵的丰盈</h2>
+      <p class="card-title-en">True wealth is the richness of your heart</p>
+      <div class="card-divider"></div>
+      <p class="card-text">Wu JinXue，美丽的人永远是富有的——富有在被爱中，富有在尊重里，富有在关怀中，富有在家人与爱人的温暖里。无论身在何处，你的真诚与善良就是你最珍贵的财富。</p>
+      <p class="card-text-en">Wu JinXue, beautiful souls are always rich — rich in love, rich in respect, rich in care, rich in the warmth of family and loved ones. Wherever you go, your sincerity and kindness are your most precious treasures.</p>
+      <div class="card-advice">💎 忠诚的人到哪里都忠诚，信任是这世上最昂贵的东西——狭隘的人永远得不到它。愿你在人生中找到那个既是灵魂伴侣、又是挚友、也是最好朋友的人。</div>
+      <div class="card-advice-en">Loyalty stays loyal everywhere. Trust is the most expensive thing in the world — narrow-minded people never earn it. May you find someone who is your soulmate, your partner, and your best friend, all in one.</div>
+      <div class="song-lyric" data-song="peini">
+        <div class="song-icon">🎵</div>
+        <div class="song-content">
+          <div class="song-line">我看着你的脸 轻刷着和弦 情人节卡片 手写的永远</div>
+          <div class="song-from">薛之谦<span>· 陪你去流浪</span></div>
+        </div>
+        <button class="song-play-btn" title="Play" onclick="toggleMusic(event, 'peini', this)">▶</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 8: WISH 5 ═══════════ -->
+<section class="page content-page" data-index="7">
+  <div class="blob blob-3"></div>
+  <div class="card">
+    <div class="card-image">
+      <img class="img-bg" src="images/photo5.jpg" alt="Wu JinXue at temple">
+    </div>
+    <div class="card-content">
+      <span class="card-number">Serenity</span>
+      <h2 class="card-title">岁月<em>静好</em>，浅喜深爱</h2>
+      <p class="card-title-en">Peaceful years, gentle joy, deep love</p>
+      <div class="card-divider"></div>
+      <p class="card-text">Wu JinXue，愿你的每一天都如诗如画。生活不必太匆忙，慢下来感受美好，珍惜身边的人和事，幸福就在不经意间。</p>
+      <p class="card-text-en">Wu JinXue, may every day of yours be as beautiful as poetry and art. Life doesn't need to be rushed — slow down, savor the beauty, cherish the people and moments around you. Happiness often comes when you least expect it.</p>
+      <div class="card-advice">&#127807; 最好的生活状态：有事做，有人爱，有所期待。</div>
+      <div class="card-advice-en">The best state of life: having something to do, someone to love, and something to look forward to.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 9: WISH 8 ═══════════ -->
+<section class="page content-page" data-index="8">
+  <div class="blob blob-4"></div>
+  <div class="card reverse">
+    <div class="card-image">
+      <img class="img-bg" src="images/photo6.jpg" alt="Olivia mountain travel">
+    </div>
+    <div class="card-content">
+      <span class="card-number">Sunshine</span>
+      <h2 class="card-title">愿你成为自己的<em>太阳</em></h2>
+      <p class="card-title-en">May you become your own sunshine</p>
+      <div class="card-divider"></div>
+      <p class="card-text">Olivia，不需要凭借谁的光，愿你成为自己的太阳。独立、自信、闪闪发光，活成自己想要的模样。生日快乐，我最亲爱的朋友！</p>
+      <p class="card-text-en">Olivia, you don't need anyone else's light — may you become your own sun. Independent, confident, shining bright, living exactly the life you want. Happy birthday, my dearest Senior!</p>
+      <div class="card-advice">&#9728;&#65039; 太阳从未向任何人索取，却把光芒分给了整个世界。愿你也这般慷慨地爱自己——不必完美，只要真实。</div>
+      <div class="card-advice-en">The sun asks nothing from anyone, yet gives its light to the entire world. May you love yourself just as generously — not needing to be perfect, only real.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 9: YOUR EYES ═══════════ -->
+<section class="page content-page" data-index="9">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="card">
+    <div class="card-image">
+      <img class="img-bg" src="images/photo10.jpg" alt="Olivia's beautiful eyes">
+    </div>
+    <div class="card-content">
+      <span class="card-number">SOUL</span>
+      <h2 class="card-title">你的眼里，<em>藏着整个宇宙</em></h2>
+      <p class="card-title-en">In your eyes, the entire universe dwells</p>
+      <div class="card-divider"></div>
+      <p class="card-text">Wu JinXue，你眼中那种难得的善良与温暖，深深吸引了我。我真的很喜欢你的眼睛——它们映照出一颗美丽的心。<br><br>说真的，我觉得你不化妆的样子更加美丽动人。正如那句话所说：&quot;美不在容颜，美是心中的光。&quot; 我能真切地看到你眼中的那束光。<br><br>你拥有一种天然的美——优雅、真诚、令人难以忘怀。</p>
+      <p class="card-text-en">Wu JinXue, there is a rare kindness and warmth in your eyes that really caught my attention. I truly like your eyes — they reflect a beautiful heart.<br><br>To be honest, I think you look even more beautiful and stunning without makeup. As the saying goes, &quot;Beauty is not in the face; beauty is a light in the heart.&quot; I can genuinely see that light in your eyes.<br><br>You have a natural beauty that's elegant, sincere, and unforgettable.</p>
+      <div class="card-advice">&#10024; তুমি যা খুঁজছো, তা-ও তোমাকেই খুঁজছে।</div>
+      
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 10: FRIENDSHIP ═══════════ -->
+<section class="page content-page" data-index="10">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="card">
+    <div class="chat-bubble-wrap">
+      <div class="chat-header">
+        <div class="chat-avatar">🌸</div>
+        <div class="chat-name">Olivia <span>Wu JinXue</span></div>
+      </div>
+      <div class="chat-bubble">I need to make genuine friends.</div>
+      <div class="chat-translated">Translated: 我需要结交真正的朋友。</div>
+      <div class="chat-time">5/7/26 10:38 PM</div>
+    </div>
+    <div class="card-content">
+      <span class="card-number">SPECIAL</span>
+      <h2 class="card-title">关于<em>真挚友谊</em>的心愿</h2>
+      <p class="card-title-en">A wish for true friendship</p>
+      <div class="card-divider"></div>
+      <p class="card-text">你说你想结交真正的朋友——这句话我记在心里。在中国三年，这是你第一次这样告诉我。作为你的学弟，我很珍惜这份信任。</p>
+      <p class="card-text-en">You said you want to make genuine friends — I keep those words in my heart. In three years in China, this was the first time you told me this. As your junior, I cherish this trust deeply.</p>
+      <div class="card-advice">&#129309; 真正的朋友不是数量，而是质量。一个懂你的人，胜过千百个泛泛之交。愿你的身边围绕着真心待你的人。</div>
+      <div class="card-advice-en">True friends are about quality, not quantity. One person who truly understands you is worth more than a thousand casual acquaintances. May genuine souls surround you.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 11: GROWTH ═══════════ -->
+<section class="page content-page" data-index="11">
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+  <div class="card reverse">
+    <div class="card-image">
+      <img class="img-bg" src="images/photo7.jpg" alt="Little Olivia now big">
+    </div>
+    <div class="card-content">
+      <span class="card-number">GROWTH</span>
+      <h2 class="card-title">❄️ 小小的你，<em>如今光芒万丈</em> 🐰</h2>
+      <p class="card-title-en">Little snow bunny, now shining so bright</p>
+      <div class="card-divider"></div>
+      <p class="card-text">从当初那个小小的女孩，到如今亭亭玉立的大学生学姐——Wu JinXue，你真的长大了。看着你一步步成长，变得更自信、更独立、更美丽，我由衷地为你骄傲。</p>
+      <p class="card-text-en">From that little girl back then, to the graceful university senior you are today — Wu JinXue, you have truly grown up. Watching you grow step by step, becoming more confident, more independent, more beautiful, I am truly proud of you.</p>
+      <div class="card-advice">&#127775; 真正的朋友最美的发现是：他们可以各自成长，却从未真正分开。</div>
+      <div class="card-advice-en">"The most beautiful discovery true friends make is that they can grow separately without growing apart." — Elisabeth Foley</div>
+      <div class="song-lyric" data-song="wushu">
+        <div class="song-icon">🎵</div>
+        <div class="song-content">
+          <div class="song-line">我存在于无数个瞬间 每一个瞬间都有你</div>
+          <div class="song-from">薛之谦<span>· 无数</span></div>
+        </div>
+        <button class="song-play-btn" title="Play" onclick="toggleMusic(event, 'wushu', this)">▶</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 12: FINAL ═══════════ -->
+<section class="page final-page" data-index="12">
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+  <div class="deco-ring deco-ring-1"></div>
+  <div class="deco-ring deco-ring-2"></div>
+  <div class="dots-grid"></div>
+  <div class="final-heart">&#128150;</div>
+  <h2 class="final-title">Happy Birthday<br>Wu JinXue · Olivia</h2>
+  <p class="final-text">
+    愿所有的幸福都陪伴着你 &nbsp; May all the happiness accompany you<br>
+    愿所有的快乐都追随着你 &nbsp; May all the joy follow you<br>
+    愿所有的好运都眷顾着你 &nbsp; May all the luck favor you<br>
+    愿你的每一天都闪闪发光 &nbsp; May every day of yours shine bright
+  </p>
+
+  <p class="final-signature">— Your junior, with all my heart 🐰❄️</p>
+</section>
+
+<script>
+  // ── Generate sparkles on hero ──
+  (function() {
+    const container = document.getElementById('sparkles');
+    if (!container) return;
+    const sizes = [4, 5, 6, 7, 8];
+    for (let i = 0; i < 35; i++) {
+      const s = document.createElement('div');
+      s.className = 'hero-sparkle';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.top = Math.random() * 100 + '%';
+      s.style.width = sizes[Math.floor(Math.random() * sizes.length)] + 'px';
+      s.style.height = s.style.width;
+      s.style.animationDelay = Math.random() * 4 + 's';
+      s.style.animationDuration = (2 + Math.random() * 3) + 's';
+      container.appendChild(s);
+    }
+  })();
+
+  // ── Floating background particles ──
+  (function() {
+    const container = document.getElementById('bgParticles');
+    if (!container) return;
+    const colors = [
+      'rgba(212,167,116,0.25)',  // gold
+      'rgba(232,160,191,0.2)',   // pink
+      'rgba(240,214,184,0.22)',  // gold-light
+      'rgba(196,115,139,0.18)',  // rose
+    ];
+    function spawnBgParticle() {
+      const p = document.createElement('div');
+      // Rare rabbit emoji particles
+      const isRabbit = Math.random() < 0.04;
+      if (isRabbit) {
+        p.className = 'bg-particle';
+        p.textContent = '🐰';
+        p.style.fontSize = (14 + Math.random() * 18) + 'px';
+        p.style.width = 'auto';
+        p.style.height = 'auto';
+        p.style.background = 'none';
+        p.style.opacity = '0.35';
+      } else {
+        p.className = 'bg-particle';
+        const size = 3 + Math.random() * 8;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+      }
+      p.style.left = Math.random() * 100 + '%';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.boxShadow = '0 0 ' + (size * 2) + 'px ' + colors[Math.floor(Math.random() * colors.length)];
+      p.style.animationDuration = (12 + Math.random() * 16) + 's';
+      p.style.animationDelay = '0s';
+      container.appendChild(p);
+      setTimeout(() => p.remove(), 28000);
+    }
+    setInterval(spawnBgParticle, 600);
+    for (let i = 0; i < 15; i++) setTimeout(spawnBgParticle, i * 300);
+  })();
+
+  // ── Cherry blossom petals ──
+  (function() {
+    const petals = document.getElementById('petals');
+    const emojis = ['🌸','💮','🌷','🪷','💐','🌺','✿','❀','🌼'];
+    function spawnPetal() {
+      const p = document.createElement('div');
+      p.className = 'petal';
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      p.style.left = Math.random() * 100 + '%';
+      p.style.fontSize = (14 + Math.random() * 22) + 'px';
+      p.style.animationDuration = (10 + Math.random() * 12) + 's';
+      p.style.animationDelay = '0s';
+      petals.appendChild(p);
+      setTimeout(() => p.remove(), 22000);
+    }
+    setInterval(spawnPetal, 1400);
+    for (let i = 0; i < 8; i++) setTimeout(spawnPetal, i * 400);
+  })();
+
+  // ── Snowfall animation ──
+  (function() {
+    const snow = document.getElementById('snowfall');
+    if (!snow) return;
+    const flakes = ['❄️','❄','❅','❆','✦','•','❋','*'];
+    function spawnSnowflake() {
+      const s = document.createElement('div');
+      s.className = 'snowflake';
+      s.textContent = flakes[Math.floor(Math.random() * flakes.length)];
+      s.style.left = Math.random() * 100 + '%';
+      s.style.fontSize = (10 + Math.random() * 16) + 'px';
+      s.style.animationDuration = (14 + Math.random() * 16) + 's';
+      s.style.animationDelay = '0s';
+      snow.appendChild(s);
+      setTimeout(() => s.remove(), 32000);
+    }
+    setInterval(spawnSnowflake, 800);
+    for (let i = 0; i < 10; i++) setTimeout(spawnSnowflake, i * 600);
+  })();
+
+  // ── Music Controls (Local MP3 Audio) ──
+  const songKeys = ['tianwai', 'xiangfeng', 'peini', 'wushu'];
+
+  function getAudio(songKey) {
+    return document.getElementById('audio-' + songKey);
+  }
+
+  function updateBtn(songKey, playing) {
+    const btn = document.querySelector('[data-song="' + songKey + '"] .song-play-btn');
+    if (btn) {
+      btn.classList.toggle('playing', playing);
+      btn.textContent = playing ? '⏸' : '▶';
+    }
+  }
+
+  function playSong(songKey) {
+    const audio = getAudio(songKey);
+    if (!audio) return;
+    stopAllMusic();
+    audio.currentTime = 0;
+    audio.play().then(() => updateBtn(songKey, true)).catch(() => {});
+  }
+
+  function toggleMusic(event, songKey, btn) {
+    event.stopPropagation();
+    const audio = getAudio(songKey);
+    if (!audio) return;
+    if (!audio.paused) {
+      audio.pause();
+      updateBtn(songKey, false);
+      return;
+    }
+    stopAllMusic();
+    audio.currentTime = 0;
+    audio.play().then(() => updateBtn(songKey, true)).catch(() => {});
+  }
+
+  function stopAllMusic() {
+    songKeys.forEach(key => {
+      const audio = getAudio(key);
+      if (audio && !audio.paused) { audio.pause(); audio.currentTime = 0; }
+      updateBtn(key, false);
+    });
+  }
+
+  // ── Navigation ──
+  const pages = document.querySelectorAll('.page');
+  const navDots = document.getElementById('navDots');
+  let currentPage = 0;
+  const totalPages = pages.length;
+
+  // Create nav dots
+  const labels = ['Home','Wish 1','Wish 2','Wish 3','Wish 4','Wish 5','Wish 6','Wish 7','Wish 8','Friendship','Growth','Final'];
+  for (let i = 0; i < totalPages; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('data-label', labels[i] || '');
+    dot.addEventListener('click', () => goTo(i));
+    navDots.appendChild(dot);
+  }
+
+  function updateNav() {
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === currentPage);
+    });
+    // Reveal visible cards
+    const cards = pages[currentPage].querySelectorAll('.card');
+    cards.forEach((c, i) => {
+      setTimeout(() => c.classList.add('visible'), i * 150);
+    });
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= totalPages) return;
+    currentPage = idx;
+    pages[idx].scrollIntoView({ behavior: 'smooth' });
+    updateNav();
+  }
+
+  function goNext() { goTo(currentPage + 1); }
+  function goPrev() { goTo(currentPage - 1); }
+
+  // Intersection Observer for scroll detection
+  let lastMusicPage = -1;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = parseInt(entry.target.dataset.index);
+        if (!isNaN(idx) && idx !== currentPage) {
+          currentPage = idx;
+          updateNav();
+          stopAllMusic();
+          lastMusicPage = -1; // reset so auto-play triggers on new slide
+        }
+        // Auto-play music when entering a slide with a song lyric
+        if (!isNaN(idx) && idx !== lastMusicPage) {
+          lastMusicPage = idx;
+          const lyric = entry.target.querySelector('.song-lyric');
+          if (lyric) {
+            const songKey = lyric.dataset.song;
+            if (songKey) playSong(songKey);
+          }
+        }
+      }
+    });
+  }, { threshold: 0.5 });
+
+  pages.forEach(p => observer.observe(p));
+
+  // Keyboard nav
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); goNext(); }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
+  });
+
+  // Touch swipe
+  let touchStartY = 0;
+  document.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 60) {
+      if (diff > 0) goNext(); else goPrev();
+    }
+  });
+
+  // Initial reveal
+  updateNav();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+
+# Memory
+.codebuddy/memory/
+.codebuddy/automations/
+.codebuddy/teams/
+
+# Temp
+*.tmp
+*.log
